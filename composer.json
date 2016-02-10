@@ -1,0 +1,17 @@
+{
+    "name": "nate/chat",
+    "authors": [
+        {
+            "name": "Nate Denlinger",
+            "email": "ndenlinger@midaseducation.com"
+        }
+    ],
+    "require": {
+        "cboden/ratchet": "^0.3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

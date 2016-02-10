@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>People Picker</title>
+
+    <!-- Bootstrap -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="container-fluid" id="main">
+        <h1>Picker</h1>
+
+        <div id="nonadmin">
+            Your Avatar: <img id="my_avatar" src="" />
+        </div>
+
+        <div id="admin" style="display: none;">
+            <button class="btn btn-primary" id="pick">Pick</button>
+            <button class="btn btn-primary" id="reset">Reset</button>
+        </div>
+        <div id="waiting_room">
+            <h2>WHO IS HERE</h2><br>
+            <h4>Current Connections: <span id="number">0</span></h4><br>
+            <div id="waiting_room_members"></div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" id="winner">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h1>And the winner is...</h1>
+                        <img src="" id="winning_avatar" />
+                        <h1 id="win_message"></h1>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script>
+
+        $(document).ready(function(){
+            var is_admin = false;
+            var hash = window.location.hash.substring(1);
+            if(hash == 'admin') {
+                $('#admin').show();
+                $('#nonadmin').hide();
+                is_admin = true;
+            }
+
+            var conn = new WebSocket('ws://localhost:8282');
+            var body = $('body');
+            var waiting = $('#waiting_room_members');
+            conn.onopen = function(e) {
+                //console.log("Connection established!");
+                if(is_admin) {
+                    sendMsg({event:'admin'});
+                } else {
+                    sendMsg({event:'user'});
+                }
+            };
+
+            conn.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                console.log(data);
+                if(data.event == 'new_connection') {
+                    waiting.html('');
+                    var html = '';
+                    for(key in data.clients) {
+                        if(!data.clients.hasOwnProperty(key)) continue;
+                        html += "<img src='" + data.clients[key].avatar + "' />";
+                    }
+                    waiting.html(html);
+                } else if (data.event == 'pick_click') {
+                    $('#winner').modal('show');
+                    $('#winning_avatar').attr('src',data.winning_avatar);
+                    if(is_admin) {
+                        body.css('background-color', 'white');
+                        $('#win_message').html('');
+                    } else {
+                        if (data.winner) {
+                            body.css('background-color', 'green');
+                            $('#win_message').html('YOU WIN!');
+                        } else {
+                            body.css('background-color', 'red');
+                            $('#win_message').html("Sorry you weren't picked.");
+                        }
+                    }
+                } else if (data.event == 'reset') {
+                    body.css('background-color','white');
+                    $('#winner').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                } else if (data.event == 'connected') {
+                    $('#my_avatar').attr('src',data.avatar);
+                }
+                if(data.number_of_clients) {
+                    $('#number').html(data.number_of_clients);
+                }
+            };
+
+            var sendMsg = function(obj) {
+                conn.send(JSON.stringify(obj));
+            };
+
+            $('#pick').click(function(){
+                sendMsg({event:'pick'});
+            });
+            $('#reset').click(function(){
+                sendMsg({event:'reset'});
+            });
+        });
+    </script>
+</body>
+
+</html>

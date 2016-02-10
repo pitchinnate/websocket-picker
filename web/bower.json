@@ -1,0 +1,23 @@
+{
+  "name": "PickMe",
+  "authors": [
+    "Nate Denlinger <ndenlinger@midaseducation.com>"
+  ],
+  "description": "A simple pickme app",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.0",
+    "bootstrap": "^3.3.6"
+  }
+}

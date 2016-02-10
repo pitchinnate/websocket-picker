@@ -1,0 +1,47 @@
+#waiting_room {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: #afd9ee;
+    padding: 10px;
+    margin: 10px;
+}
+#waiting_room h2 {
+    display:inline-block;
+    color: #2b669a;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+}
+#waiting_room h4 {
+    display:inline-block;
+    color: #2b669a;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+}
+#waiting_room img {
+    margin: 4px;
+    width: 80px;
+    border-radius: 40px;
+}
+#waiting_room_members {
+    display: inline-block;
+}
+#my_avatar {
+    margin: 4px;
+    width: 80px;
+    border-radius: 40px;
+}
+.modal-body {
+    text-align: center;
+}
+#winning_avatar {
+    width: 150px;
+    border-radius: 75px;
+}
+#main {
+    text-align: center;
+}
+#admin {
+    margin-top: 10px;
+}
