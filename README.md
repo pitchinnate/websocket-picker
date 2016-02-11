@@ -12,7 +12,7 @@ person.
 
 ### Example
 I have a working example running at http://picker.eboodevelopment.com/ to access the admin view
-just go to http://picker.eboodevelopment.com/#admin 
+just go to http://picker.eboodevelopment.com/#admin
 
 ## Running the Websocket Server
 To get it running first you need to get all dependencies so run `composer install`. Then you can simply go to the
@@ -26,7 +26,7 @@ it in `app/server.php` edit this line:
 ...
 new HttpServer(
         new WsServer(
-            new Chat()
+            new Message()
         )
     ),
     8282 //<-EDIT THIS
