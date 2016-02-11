@@ -123,7 +123,6 @@
             var sendMsg = function(obj) {
                 conn.send(JSON.stringify(obj));
             };
-
             $('#pick').click(function(){
                 sendMsg({event:'pick'});
             });
