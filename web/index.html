@@ -70,51 +70,54 @@
             var body = $('body');
             var waiting = $('#waiting_room_members');
             conn.onopen = function(e) {
-                //console.log("Connection established!");
-                if(is_admin) {
-                    sendMsg({event:'admin'});
-                } else {
-                    sendMsg({event:'user'});
-                }
+                sendMsg({event:'connect',is_admin: is_admin});
             };
 
             conn.onmessage = function(e) {
                 var data = JSON.parse(e.data);
-                console.log(data);
-                if(data.event == 'new_connection') {
-                    waiting.html('');
-                    var html = '';
-                    for(key in data.clients) {
-                        if(!data.clients.hasOwnProperty(key)) continue;
-                        html += "<img src='" + data.clients[key].avatar + "' />";
-                    }
-                    waiting.html(html);
-                } else if (data.event == 'pick_click') {
-                    $('#winner').modal('show');
-                    $('#winning_avatar').attr('src',data.winning_avatar);
-                    if(is_admin) {
-                        body.css('background-color', 'white');
-                        $('#win_message').html('');
-                    } else {
-                        if (data.winner) {
-                            body.css('background-color', 'green');
-                            $('#win_message').html('YOU WIN!');
-                        } else {
-                            body.css('background-color', 'red');
-                            $('#win_message').html("Sorry you weren't picked.");
-                        }
-                    }
+                if(data.event == 'connect') {
+                    eventConnect(data);
+                } else if (data.event == 'pick') {
+                    eventPick(data);
                 } else if (data.event == 'reset') {
-                    body.css('background-color','white');
-                    $('#winner').modal('hide');
-                    $('body').removeClass('modal-open');
-                    $('.modal-backdrop').remove();
+                    eventReset();
                 } else if (data.event == 'connected') {
                     $('#my_avatar').attr('src',data.avatar);
                 }
-                if(data.number_of_clients) {
-                    $('#number').html(data.number_of_clients);
+            };
+
+            var eventReset = function() {
+                body.css('background-color','white');
+                $('#winner').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            };
+            var eventPick = function(data) {
+                $('#winner').modal('show');
+                $('#winning_avatar').attr('src',data.winning_avatar);
+                if(!is_admin) {
+                    if (data.winner) {
+                        body.css('background-color', 'green');
+                        $('#win_message').html('YOU WIN!');
+                    } else {
+                        body.css('background-color', 'red');
+                        $('#win_message').html("Sorry you weren't picked.");
+                    }
                 }
+            };
+            var eventConnect = function(data) {
+                waiting.html('');
+                var html = '';
+                var num_users = 0;
+                for(key in data.clients) {
+                    if(!data.clients.hasOwnProperty(key)) continue;
+                    if(data.clients[key].is_admin == false) {
+                        num_users++;
+                        html += "<img src='" + data.clients[key].avatar + "' />";
+                    }
+                }
+                waiting.html(html);
+                $('#number').html(num_users);
             };
 
             var sendMsg = function(obj) {

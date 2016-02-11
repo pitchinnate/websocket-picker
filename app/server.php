@@ -2,7 +2,7 @@
 namespace App;
 
 use Ratchet\Server\IoServer;
-use App\Chat;
+use App\Message;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 
@@ -11,7 +11,7 @@ require dirname(__DIR__).'/vendor/autoload.php';
 $server = IoServer::factory(
 new HttpServer(
         new WsServer(
-            new Chat()
+            new Message()
         )
     ),
     8282
